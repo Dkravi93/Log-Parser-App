@@ -1,0 +1,33 @@
+import { IRider } from '../models/rider/rider';
+import { IOrder } from '../models/order/order';
+import { model } from 'mongoose';
+import { minDistance } from './haversineDistance';
+const Rider = model<IRider>('Rider');
+const Order = model<IOrder>('Order');
+
+export const calculateDistance = async (riderId: string) => {
+	try {
+		const rider = await Rider.findById(riderId);
+		const ArrayOrderId = rider.activeOrders;
+		const riderlocation = rider.latestLocation; 
+
+		let distance = 0;
+		let prev = [];
+		for (let i = 0; i < ArrayOrderId.length; i++) {
+			const order = await Order.findById(ArrayOrderId[i]);
+			let [la, lo] = order.buyerDetails.billingAddress.location.coordinates;
+			let [la0, lo0] = order.sellerDetails.shopLocation.coordinates;
+			let [la1, lo1] = riderlocation.coordinates;
+			let [la2, lo2] = prev;
+			if (i == 0) {
+				distance += minDistance(la0, la1, lo0, lo1) + minDistance(la, la0, lo, lo0);
+			} else {
+				distance += minDistance(la2, la0, lo2, lo0) + minDistance(la0, la, lo0, lo);
+			}
+			prev = [la, lo];
+		}
+		return distance;
+	} catch (error) {
+		console.log(error);
+	}
+};
