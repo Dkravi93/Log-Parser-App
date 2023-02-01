@@ -4,7 +4,7 @@ function FileUploadSingle() {
   const [file, setFile] = useState<File>();
   const [fix, setFix] = useState([]);
   const [err, setErr] = useState("");
-  const downloadFile =({ data, fileName, fileType }: { data: any, fileName: string, fileType: string }): void => {
+  const downloadFile = ({ data, fileName, fileType }: { data: any, fileName: string, fileType: string }): void => {
     const blob = new Blob([data], { type: fileType })
     const a = document.createElement('a')
     a.download = fileName
@@ -17,7 +17,7 @@ function FileUploadSingle() {
     a.dispatchEvent(clickEvt)
     a.remove()
   }
-  
+
   const exportToJson = (e: { preventDefault: () => void; }) => {
     e.preventDefault()
     downloadFile({
@@ -26,7 +26,7 @@ function FileUploadSingle() {
       fileType: 'text/json',
     })
   }
-  
+
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -38,18 +38,18 @@ function FileUploadSingle() {
     if (!file) {
       return;
     }
-		const formData = new FormData();
+    const formData = new FormData();
 
-		formData.append('File', file);
+    formData.append('File', file);
     console.log(file, formData);
     fetch('http://localhost:3001/api/parse-logs',
-			{
-				method: 'POST',
-				body: formData,
-			}
+      {
+        method: 'POST',
+        body: formData,
+      }
     )
-      .then((res) =>res.json())
-      .then((data) =>{
+      .then((res) => res.json())
+      .then((data) => {
         console.log(data)
         setFix(data.logs);
       })
@@ -58,18 +58,20 @@ function FileUploadSingle() {
 
   return (
     <div>
-      <h1>Pleas try uploading</h1>
-      <input type="file" onChange={handleFileChange} />
-
-      <div>{file && `${file.name} - ${file.type}`}</div>
-
-      <button onClick={handleUploadClick}>Upload</button>
-
+      <h1 style={{ backgroundColor: "teal" }} >Please try uploading</h1>
+      <div>
+      <label>Name Of File :{file && `${file.name} - ${file.type}`}</label>
+        <input type="file" onChange={handleFileChange} />
+        </div>
+        <br />
+        <label>Submit File {" "}
+        <button onClick={handleUploadClick}>Upload</button>
+        </label>
       {fix && fix.length > 0 && <div>
         <button type='button' onClick={exportToJson}>
-          Export to JSON
+          Download file
         </button>
-        </div>}
+      </div>}
     </div>
   );
 }
