@@ -3,6 +3,7 @@ import { ChangeEvent, useState } from 'react';
 function FileUploadSingle() {
   const [file, setFile] = useState<File>();
   const [fix, setFix] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const downloadFile = ({ data, fileName, fileType }: { data: any, fileName: string, fileType: string }): void => {
     const blob = new Blob([data], { type: fileType })
@@ -35,6 +36,7 @@ function FileUploadSingle() {
   };
 
   const handleUploadClick = () => {
+    setLoading(true)
     if (!file) {
       return;
     }
@@ -52,12 +54,15 @@ function FileUploadSingle() {
       .then((data) => {
         console.log(data)
         setFix(data.logs);
+        setLoading(false)
       })
-      .catch((err) => setErr(err.message));
+      .catch((err) => {setErr(err.message); setLoading(false)});
   };
 
   return (
     <div>
+      {loading ? <div>Loading...</div>:(
+        <div>
       <h1 style={{ backgroundColor: "teal" }} >Please try uploading</h1>
       <div>
       <label>Name Of File :{file && `${file.name} - ${file.type}`}</label>
@@ -67,11 +72,15 @@ function FileUploadSingle() {
         <label>Submit File {" "}
         <button onClick={handleUploadClick}>Upload</button>
         </label>
+        <p>{err}</p>
       {fix && fix.length > 0 && <div>
         <button type='button' onClick={exportToJson}>
           Download file
         </button>
       </div>}
+      </div>
+      )
+    }
     </div>
   );
 }
