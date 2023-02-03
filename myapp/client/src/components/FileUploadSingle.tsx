@@ -38,7 +38,8 @@ function FileUploadSingle() {
   const handleUploadClick = () => {
     setLoading(true)
     if (!file) {
-      setLoading(false)
+      setLoading(false);
+      alert("Please Upload Any file")
       return;
     }
     const formData = new FormData();
