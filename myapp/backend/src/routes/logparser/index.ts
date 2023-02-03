@@ -7,7 +7,6 @@ import { readFileSync } from 'fs';
 
 router.post('/',upload.single("File"), (req, res) => {
     const  file  = req.file;
-    console.log(req);
     const logs = readFileSync(file.path, 'utf-8')
       .split('\n')
       .filter(log => logLevels.some(level => log.includes(level)))
